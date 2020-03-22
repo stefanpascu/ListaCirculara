@@ -14,21 +14,13 @@ public:
         this->info = 0;
         this->next = this;
     }
-    Nod(int x)
-    {
-        this->info = x;
-        this->next = this;
-    }
-    ~Nod()
-    {
-        //cout<<"deconstructorul a fost apelat"<<endl;
-    }
+    ~Nod() {}
 
     int getInfo(){
         return this->info;
     }
     void setInfo(int x){
-        this->info=x;
+        this->info = x;
     }
     Nod *getNext(){
         return this->next;
@@ -38,40 +30,76 @@ public:
     }
 };
 
-class Lista_circulara
+class ListaCirculara
 {
     Nod *prim;
 
 public:
 
-    Lista_circulara(int primInfo)
+    ListaCirculara()
     {
-        prim = new Nod(primInfo);
+        prim = NULL;
     }
 
-    Nod *getPrim()
+    ~ListaCirculara() {
+        Nod *temp, *p = prim->getNext();
+        while(p!=prim) {
+            temp = p;
+            p=p->getNext();
+            delete temp;
+        }
+        delete prim;
+    }
+
+    ListaCirculara(const ListaCirculara &lista)
+    {
+        Nod *listaPrim = lista.getPrim();
+        prim = new Nod();
+        prim->setInfo(listaPrim->getInfo());
+
+        Nod *p = listaPrim->getNext();
+        Nod *copie, *anterior = prim;
+        while (p != listaPrim) {
+            copie = new Nod();
+            copie->setInfo(p->getInfo());
+
+            anterior->setNext(copie);
+
+            anterior = copie;
+            p = p->getNext();
+        }
+        anterior->setNext(prim);
+    }
+
+    Nod *getPrim() const
     {
         return prim;
     }
+
     void setPrim(Nod *x)
     {
         prim = x;
     }
 
-
-    void Adaugare(int k, int x)
+    void adaugare(int k, int x)
     {
-        Nod *r, *q;
-        r = prim;
-        for (int i=1; i<=k-2; i++)
-            r=r->getNext();
-        q = new Nod;
-        q->setInfo(x);
-        q->setNext(r->getNext());
-        r->setNext(q);
+        if (prim == NULL) {
+            prim = new Nod();
+            prim->setInfo(x);
+            prim->setNext(prim);
+        } else {
+            Nod *r, *q;
+            r = prim;
+            for (int i=1; i<=k-2; i++)
+                r=r->getNext();
+            q = new Nod;
+            q->setInfo(x);
+            q->setNext(r->getNext());
+            r->setNext(q);
+        }
     }
 
-    void stergerek(int k)
+    void stergere(int k)
     {
         Nod *r, *q;
         if (k == 1)
@@ -113,38 +141,45 @@ public:
             q->setNext(r);
         }
     }
+
     void golire(int k)
     {
         Nod *z, *r, *q;
         z = prim;
         r = prim;
-            while(z->getNext() != z)
-            {
-                for (int i=1; i<=k-2; i++)
-                    r = r->getNext();
-                q = r->getNext();
-                r->setNext(r->getNext()->getNext());
-                cout<<q->getInfo()<<" ";
-                delete q;
+        while(z->getNext() != z)
+        {
+            for (int i=1; i<=k-2; i++)
                 r = r->getNext();
-                z = r;
+
+            q = r->getNext();
+
+            if (q == prim) {
+                prim = q -> getNext();
             }
-            cout<<z->getInfo()<<endl;
-            delete z;
-            delete prim;
-            prim = NULL;
+
+            r->setNext(r->getNext()->getNext());
+            cout<<q->getInfo()<<" ";
+            delete q;
+            r = r->getNext();
+            z = r;
+        }
+        cout<<z->getInfo()<<endl;
+        delete z;
+        prim = NULL;
     }
-    friend istream &operator >> ( istream &in, Lista_circulara &aux);
-    friend ostream &operator << ( ostream &out, Lista_circulara &auxo);
-    friend Lista_circulara operator + (Lista_circulara &p1, Lista_circulara &p2);
+
+    friend istream &operator >> ( istream &in, ListaCirculara &aux);
+    friend ostream &operator << ( ostream &out, ListaCirculara &auxo);
+    friend ListaCirculara operator + (ListaCirculara &p1, ListaCirculara &p2);
 };
 
-Lista_circulara operator + (Lista_circulara &p1, Lista_circulara &p2)
+ListaCirculara operator + (ListaCirculara &p1, ListaCirculara &p2)
 {
     Nod *u1, *u2, *r;
     u1 = p1.getPrim();
     r = u1;
-    Lista_circulara Lista = Lista_circulara(u1->getInfo());
+    ListaCirculara Lista = ListaCirculara();
     Lista.setPrim(u1);
     while (r->getNext()!=u1)
     {
@@ -161,32 +196,35 @@ Lista_circulara operator + (Lista_circulara &p1, Lista_circulara &p2)
     return Lista;
 }
 
-istream &operator >> (istream &in, Lista_circulara &aux)
+istream &operator >> (istream &in, ListaCirculara &aux)
 {
     cout<<"Scrieti numarul de elemente: \n";
     int n, primul, x;
     in>>n;
     cout<<"Scrieti elementele separate prin 'enter' \n";
     in>>primul;
-    aux.setPrim(new Nod(primul));
+    Nod *prim = new Nod();
+    prim->setInfo(primul);
+    aux.setPrim(prim);
     for(int i=2;i<=n;i++)
     {
         in>>x;
-        aux.Adaugare(i, x);
+        aux.adaugare(i, x);
     }
     return in;
 }
 
-ostream &operator << (ostream &out, Lista_circulara &auxo)
+ostream &operator << (ostream &out, ListaCirculara &auxo)
 {
     Nod *r, *prim;
     r = auxo.getPrim();
     prim = r;
-    do
-    {
-        out<<r->getInfo()<<" ";
-        r = r->getNext();
-    }while(r!=prim);
+    if (prim != NULL) {
+        do {
+            out<<r->getInfo()<<" ";
+            r = r->getNext();
+        } while(r!=prim);
+    }
     out<<prim->getInfo();
     out<<endl;
     return out;
@@ -194,14 +232,15 @@ ostream &operator << (ostream &out, Lista_circulara &auxo)
 
 int main()
 {
-    Lista_circulara *lista = new Lista_circulara(1);
-    cin>>*lista;
-    cout<<"1 -> Adaugare valorii x pe pozitia k.\n"
-    <<"2 -> Stergerea elementului de pe pozitia k.\n"
-    <<"3 -> Inversarea elementelor listei.\n"
+    ListaCirculara lista = ListaCirculara();
+    cin>>lista;
+
+    cout<<"1 -> Adaugarea valorii x pe pozitia k\n"
+    <<"2 -> Stergerea elementului de pe pozitia k\n"
+    <<"3 -> Inversarea elementelor listei\n"
     <<"4 -> Eliminarea elementelor din k in k pana la golirea listei\n"
     <<"5 -> Concatenare de liste\n"
-    <<"6 -> Optiunea de oprire.\n";
+    <<"6 -> Optiunea de oprire\n";
     int opt, k, x;
     cout<<"Introduceti o optiune:\n";
     cin>>opt;
@@ -213,30 +252,29 @@ int main()
             cin>>k;
             cout<<"x = ";
             cin>>x;
-            lista->Adaugare(k, x);
-            cout<<*lista;
+            lista.adaugare(k, x);
+            cout<<lista;
             break;
         case 2:
             cout<<"k = ";
             cin>>k;
-            lista->stergerek(k);
-            cout<<*lista;
+            lista.stergere(k);
+            cout<<lista;
             break;
         case 3:
-            lista->inversare();
-            cout<<*lista;
+            lista.inversare();
+            cout<<lista;
             break;
         case 4:
             cout<<"k = ";
             cin>>k;
-            lista->golire(k);
-            cout<<*lista;
+            lista.golire(k);
             break;
         case 5:
             cout<<"Scrieti cea de-a doua lista: \n";
-            Lista_circulara *lista1 = new Lista_circulara(1);
-            cin>>*lista1;
-            Lista_circulara suma = *lista + *lista1;
+            ListaCirculara lista1 = ListaCirculara();
+            cin>>lista1;
+            ListaCirculara suma = lista + lista1;
             cout<<suma;
             break;
 
