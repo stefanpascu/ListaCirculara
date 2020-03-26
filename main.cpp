@@ -187,24 +187,42 @@ public:
 
 ListaCirculara operator + (ListaCirculara &p1, ListaCirculara &p2)
 {
-    Nod *u1, *u2, *r;
-    u1 = p1.getPrim();
-    r = u1;
-    ListaCirculara Lista = ListaCirculara();
-    Lista.setPrim(u1);
-    while (r->getNext()!=u1)
+    ListaCirculara lista = ListaCirculara();
+    Nod *listaPrim = p1.prim;
+    Nod *prim = new Nod();
+    prim->setInfo(listaPrim->getInfo());
+    lista.prim = prim;
+
+    Nod *p = listaPrim->getNext();
+    Nod *copie, *anterior = prim;
+    while (p != listaPrim)
     {
-        r = r->getNext();
+        copie = new Nod();
+        copie->setInfo(p->getInfo());
+        anterior->setNext(copie);
+        anterior = copie;
+        p = p->getNext();
     }
-    r->setNext(p2.getPrim());
-    u2 = p2.getPrim();
-    r = u2;
-    while (r->getNext()!=u2)
+    anterior->setNext(prim);
+
+    Nod *listaPrim2 = p2.prim;
+    Nod *prim2 = new Nod();
+    prim2->setInfo(listaPrim2->getInfo());
+    anterior->setNext(prim2);
+
+
+    p = listaPrim2->getNext();
+    anterior = prim2;
+    while (p != listaPrim2)
     {
-        r = r->getNext();
+        copie = new Nod();
+        copie->setInfo(p->getInfo());
+        anterior->setNext(copie);
+        anterior = copie;
+        p = p->getNext();
     }
-    r->setNext(p1.getPrim());
-    return Lista;
+    anterior->setNext(prim);
+    return lista;
 }
 
 istream &operator >> (istream &in, ListaCirculara &aux)
@@ -216,7 +234,7 @@ istream &operator >> (istream &in, ListaCirculara &aux)
     in>>primul;
     Nod *prim = new Nod();
     prim->setInfo(primul);
-    aux.setPrim(prim);
+    aux.prim = prim;
     for(int i=2; i<=n; i++)
     {
         in>>x;
@@ -228,7 +246,7 @@ istream &operator >> (istream &in, ListaCirculara &aux)
 ostream &operator << (ostream &out, ListaCirculara &auxo)
 {
     Nod *r, *prim;
-    r = auxo.getPrim();
+    r = auxo.prim;
     prim = r;
     if (prim != NULL)
     {
