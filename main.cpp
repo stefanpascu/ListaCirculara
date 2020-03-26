@@ -16,16 +16,20 @@ public:
     }
     ~Nod() {}
 
-    int getInfo(){
+    int getInfo()
+    {
         return this->info;
     }
-    void setInfo(int x){
+    void setInfo(int x)
+    {
         this->info = x;
     }
-    Nod *getNext(){
+    Nod *getNext()
+    {
         return this->next;
     }
-    void setNext(Nod *x){
+    void setNext(Nod *x)
+    {
         this->next=x;
     }
 };
@@ -41,9 +45,11 @@ public:
         prim = NULL;
     }
 
-    ~ListaCirculara() {
+    ~ListaCirculara()
+    {
         Nod *temp, *p = prim->getNext();
-        while(p!=prim) {
+        while(p!=prim)
+        {
             temp = p;
             p=p->getNext();
             delete temp;
@@ -59,7 +65,8 @@ public:
 
         Nod *p = listaPrim->getNext();
         Nod *copie, *anterior = prim;
-        while (p != listaPrim) {
+        while (p != listaPrim)
+        {
             copie = new Nod();
             copie->setInfo(p->getInfo());
 
@@ -83,11 +90,14 @@ public:
 
     void adaugare(int k, int x)
     {
-        if (prim == NULL) {
+        if (prim == NULL)
+        {
             prim = new Nod();
             prim->setInfo(x);
             prim->setNext(prim);
-        } else {
+        }
+        else
+        {
             Nod *r, *q;
             r = prim;
             for (int i=1; i<=k-2; i++)
@@ -154,7 +164,8 @@ public:
 
             q = r->getNext();
 
-            if (q == prim) {
+            if (q == prim)
+            {
                 prim = q -> getNext();
             }
 
@@ -206,7 +217,7 @@ istream &operator >> (istream &in, ListaCirculara &aux)
     Nod *prim = new Nod();
     prim->setInfo(primul);
     aux.setPrim(prim);
-    for(int i=2;i<=n;i++)
+    for(int i=2; i<=n; i++)
     {
         in>>x;
         aux.adaugare(i, x);
@@ -219,11 +230,14 @@ ostream &operator << (ostream &out, ListaCirculara &auxo)
     Nod *r, *prim;
     r = auxo.getPrim();
     prim = r;
-    if (prim != NULL) {
-        do {
+    if (prim != NULL)
+    {
+        do
+        {
             out<<r->getInfo()<<" ";
             r = r->getNext();
-        } while(r!=prim);
+        }
+        while(r!=prim);
     }
     out<<prim->getInfo();
     out<<endl;
@@ -234,19 +248,20 @@ int main()
 {
     ListaCirculara lista = ListaCirculara();
     cin>>lista;
-
-    cout<<"1 -> Adaugarea valorii x pe pozitia k\n"
-    <<"2 -> Stergerea elementului de pe pozitia k\n"
-    <<"3 -> Inversarea elementelor listei\n"
-    <<"4 -> Eliminarea elementelor din k in k pana la golirea listei\n"
-    <<"5 -> Concatenare de liste\n"
-    <<"6 -> Optiunea de oprire\n";
     int opt, k, x;
-    cout<<"Introduceti o optiune:\n";
-    cin>>opt;
-    while(opt!=6)
+    do
     {
-        switch(opt){
+        cout<<"1 -> Adaugarea valorii x pe pozitia k\n"
+            <<"2 -> Stergerea elementului de pe pozitia k\n"
+            <<"3 -> Inversarea elementelor listei\n"
+            <<"4 -> Eliminarea elementelor din k in k pana la golirea listei\n"
+            <<"5 -> Concatenare de liste\n"
+            <<"6 -> Optiunea de oprire\n";
+
+        cout<<"Introduceti o optiune:\n";
+        cin>>opt;
+        switch(opt)
+        {
         case 1:
             cout<<"k = ";
             cin>>k;
@@ -279,8 +294,7 @@ int main()
             break;
 
         }
-        cout<<"Introduceti o optiune:\n";
-        cin>>opt;
     }
+    while(opt!=6);
     return 0;
 }
